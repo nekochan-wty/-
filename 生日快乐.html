@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 30%, #ffd89b 70%, #ffecd2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: all 1s ease;
+            cursor: pointer;
+        }
+
+        body.birthday-mode {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 30%, #ffecd2 70%, #fecfef 100%);
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 182, 193, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 218, 185, 0.4) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px 40px;
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(255, 150, 100, 0.25);
+            transition: all 0.5s ease;
+        }
+
+        .birthday-mode .container {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 30px 60px -15px rgba(255, 107, 107, 0.4);
+        }
+
+        .name {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 56px;
+            color: #ff7f50;
+            margin-bottom: 10px;
+            text-shadow: 2px 4px 8px rgba(255, 127, 80, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .birthday-mode .name {
+            font-size: 64px;
+            animation: glow 1s ease-in-out infinite alternate, bounce 0.6s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 4px 8px rgba(255, 127, 80, 0.3);
+            }
+            to {
+                text-shadow: 2px 4px 20px rgba(255, 127, 80, 0.6);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 15px;
+            letter-spacing: 4px;
+        }
+
+        .lunar-info {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .lunar-info span {
+            color: #ff7f50;
+            font-weight: bold;
+        }
+
+        .birthday-mode .subtitle {
+            font-size: 28px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            transition: all 0.5s ease;
+        }
+
+        .countdown.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            display: none;
+        }
+
+        .countdown-item {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-radius: 20px;
+            padding: 25px 30px;
+            min-width: 110px;
+            box-shadow: 0 10px 30px rgba(255, 150, 100, 0.2),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.3s ease;
+        }
+
+        .countdown-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .countdown-item.last-ten-seconds {
+            animation: flash 0.5s ease-in-out infinite;
+        }
+
+        @keyframes flash {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 10px 30px rgba(255, 150, 100, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 15px 40px rgba(255, 150, 100, 0.4);
+            }
+        }
+
+        .countdown-number {
+            font-size: 52px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff7f50, #ff6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .last-ten-seconds .countdown-number {
+            font-size: 58px;
+        }
+
+        .countdown-label {
+            font-size: 16px;
+            color: #999;
+            letter-spacing: 2px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 2;
+            transition: all 0.5s ease;
+        }
+
+        .birthday-mode .message {
+            font-size: 22px;
+            color: #ff6b6b;
+        }
+
+        .message span {
+            color: #ff7f50;
+            font-weight: bold;
+        }
+
+        .date-info {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 20px;
+        }
+
+        .decoration {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.7;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+            pointer-events: none;
+        }
+
+        .moon {
+            top: 8%;
+            right: 10%;
+            animation-delay: 0s;
+            font-size: 55px;
+        }
+
+        .star1 {
+            top: 15%;
+            left: 8%;
+            animation-delay: 1s;
+            font-size: 40px;
+        }
+
+        .gift1 {
+            bottom: 15%;
+            left: 12%;
+            animation-delay: 2s;
+            font-size: 45px;
+        }
+
+        .gift2 {
+            bottom: 10%;
+            right: 8%;
+            animation-delay: 1.5s;
+        }
+
+        .cake-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+            animation: bounce 2.5s ease-in-out infinite;
+            filter: drop-shadow(0 6px 12px rgba(255, 150, 100, 0.3));
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+
+        .cake-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .birthday-mode .cake-icon {
+            font-size: 90px;
+            animation: bounce 0.8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+            50% {
+                transform: translateY(-25px) rotate(5deg);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-15px) scale(1.05);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 25px;
+                margin: 20px;
+            }
+
+            .name {
+                font-size: 40px;
+            }
+
+            .birthday-mode .name {
+                font-size: 48px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+
+            .countdown-number {
+                font-size: 36px;
+            }
+
+            .last-ten-seconds .countdown-number {
+                font-size: 40px;
+            }
+
+            .countdown-item {
+                min-width: 75px;
+                padding: 18px 12px;
+            }
+
+            .countdown-label {
+                font-size: 12px;
+            }
+
+            .message {
+                font-size: 15px;
+            }
+
+            .decoration {
+                font-size: 35px;
+            }
+
+            .cake-icon {
+                font-size: 50px;
+            }
+
+            .birthday-mode .cake-icon {
+                font-size: 70px;
+            }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: particleFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff7f50;
+            animation: heartFloat 5s ease-in-out infinite;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @keyframes heartFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.2);
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confettiFall 3s ease-in-out infinite;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .birthday-mode .confetti {
+            opacity: 1;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .click-effect {
+            position: absolute;
+            pointer-events: none;
+            animation: clickPop 0.8s ease-out forwards;
+            font-size: 30px;
+            z-index: 100;
+        }
+
+        @keyframes clickPop {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0) rotate(360deg) translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        .gift-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff7f50, #ff6347);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 127, 80, 0.3);
+            transition: all 0.3s ease;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .gift-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 127, 80, 0.4);
+        }
+
+        .gift-button:active {
+            transform: translateY(0);
+        }
+
+        .gift-button.hidden {
+            display: none;
+        }
+
+        .birthday-wishes {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+        }
+
+        .birthday-mode .birthday-wishes {
+            display: block;
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wish-item {
+            font-size: 16px;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+
+        .wish-item::before {
+            content: '🎂 ';
+        }
+
+        .surprise-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 48px;
+            font-family: 'Ma Shan Zheng', cursive;
+            color: #ff7f50;
+            text-shadow: 2px 4px 8px rgba(255, 127, 80, 0.5);
+            z-index: 200;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .surprise-text.show {
+            animation: surprisePop 1.5s ease-out forwards;
+        }
+
+        @keyframes surprisePop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            30% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .hint-text {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 15px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .lantern {
+            position: absolute;
+            font-size: 45px;
+            opacity: 0.7;
+            animation: swing 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .lantern1 {
+            top: 5%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .lantern2 {
+            top: 8%;
+            right: 18%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes swing {
+            0%, 100% {
+                transform: rotate(-10deg);
+            }
+            50% {
+                transform: rotate(10deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="confetti-container" id="confettiContainer"></div>
+    
+    <div class="decoration moon">🌙</div>
+    <div class="decoration star1">⭐</div>
+    <div class="decoration gift1">🎁</div>
+    <div class="decoration gift2">🎁</div>
+    <div class="lantern lantern1">🏮</div>
+    <div class="lantern lantern2">🏮</div>
+
+    <div class="surprise-text" id="surpriseText">🎉 惊喜 🎉</div>
+
+    <div class="container">
+        <div class="cake-icon" id="cakeIcon">🎂</div>
+        <h1 class="name">生日快乐</h1>
+        <p class="subtitle" id="subtitle">生 日 快 乐</p>
+        <p class="lunar-info">小莲小莲</p>
+        
+        <div class="countdown" id="countdown">
+            <div class="countdown-item" id="daysItem">
+                <div class="countdown-number" id="days">00</div>
+                <div class="countdown-label">天</div>
+            </div>
+            <div class="countdown-item" id="hoursItem">
+                <div class="countdown-number" id="hours">00</div>
+                <div class="countdown-label">时</div>
+            </div>
+            <div class="countdown-item" id="minutesItem">
+                <div class="countdown-number" id="minutes">00</div>
+                <div class="countdown-label">分</div>
+            </div>
+            <div class="countdown-item" id="secondsItem">
+                <div class="countdown-number" id="seconds">00</div>
+                <div class="countdown-label">秒</div>
+            </div>
+        </div>
+
+        <p class="message" id="message">
+            愿你每一天都 <span>开开心心</span><br>
+            所有的美好都 <span>如约而至</span>
+        </p>
+
+        <button class="gift-button" id="giftButton">🎁 点击拆礼物</button>
+
+        <div class="birthday-wishes" id="birthdayWishes">
+            <div class="wish-item">生日快乐！愿你岁岁平安，年年有喜</div>
+            <div class="wish-item">愿所有的好运都围绕着你</div>
+            <div class="wish-item">新的一岁，要更加开心幸福哦~</div>
+        </div>
+
+        <p class="date-info">农历生日：八月初十</p>
+        <p class="hint-text">💡 点击屏幕有惊喜哦~</p>
+    </div>
+
+    <script>
+        const lunarBirthdayMonth = 8;
+        const lunarBirthdayDay = 10;
+        let isBirthdayMode = false;
+        let giftOpened = false;
+
+        const lunarBirthdayDates = [
+            { year: 2026, month: 9, day: 20 },
+            { year: 2027, month: 9, day: 10 },
+            { year: 2028, month: 9, day: 28 },
+            { year: 2029, month: 9, day: 17 },
+            { year: 2030, month: 9, day: 7 },
+        ];
+
+        function getNextBirthday() {
+            const today = new Date();
+            
+            for (let i = 0; i < lunarBirthdayDates.length; i++) {
+                const date = lunarBirthdayDates[i];
+                const birthday = new Date(date.year, date.month - 1, date.day);
+                if (birthday > today) {
+                    return birthday;
+                }
+            }
+            
+            const lastDate = lunarBirthdayDates[lunarBirthdayDates.length - 1];
+            return new Date(lastDate.year + 1, lastDate.month - 1, lastDate.day);
+        }
+
+        function isTodayBirthday() {
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            
+            for (let i = 0; i < lunarBirthdayDates.length; i++) {
+                const date = lunarBirthdayDates[i];
+                const dateStr = date.year + '-' + date.month + '-' + date.day;
+                if (todayStr === dateStr) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateCountdown() {
+            if (isTodayBirthday()) {
+                if (!isBirthdayMode) {
+                    enterBirthdayMode();
+                }
+                return;
+            }
+
+            const birthday = getNextBirthday();
+            const now = new Date();
+            const diff = birthday - now;
+
+            if (diff <= 0) {
+                if (!isBirthdayMode) {
+                    enterBirthdayMode();
+                }
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            const totalSeconds = Math.floor(diff / 1000);
+            if (totalSeconds <= 10 && totalSeconds > 0) {
+                document.querySelectorAll('.countdown-item').forEach(item => {
+                    item.classList.add('last-ten-seconds');
+                });
+            } else {
+                document.querySelectorAll('.countdown-item').forEach(item => {
+                    item.classList.remove('last-ten-seconds');
+                });
+            }
+        }
+
+        function enterBirthdayMode() {
+            isBirthdayMode = true;
+            document.body.classList.add('birthday-mode');
+            document.getElementById('countdown').classList.add('hidden');
+            document.getElementById('subtitle').textContent = '🎉 生 日 快 乐 🎉';
+            document.getElementById('message').innerHTML = '今天是你的农历生日<br>祝你 <span>生日快乐</span>！';
+            document.getElementById('giftButton').classList.add('hidden');
+            createConfetti();
+            showSurpriseText('🎂 生日快乐 🎂');
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particle.style.width = (Math.random() * 6 + 4) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#ff7f50', '#ffd700', '#ff6b6b', '#ff8fab', '#c084fc', '#6bcb77', '#4d96ff'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = (Math.random() * 8 + 6) + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                container.appendChild(confetti);
+            }
+        }
+
+        function createHearts() {
+            const hearts = ['💕', '💖', '💗', '💓', '💝'];
+            for (let i = 0; i < 8; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart decoration';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 90 + 5 + '%';
+                heart.style.top = Math.random() * 80 + 10 + '%';
+                heart.style.animationDelay = Math.random() * 3 + 's';
+                heart.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                document.body.appendChild(heart);
+            }
+        }
+
+        function createClickEffect(x, y) {
+            const emojis = ['💕', '💖', '💗', '✨', '⭐', '🎀', '🌸', '💫', '🏮', '🌙'];
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 800);
+        }
+
+        function showSurpriseText(text) {
+            const surpriseText = document.getElementById('surpriseText');
+            surpriseText.textContent = text;
+            surpriseText.classList.remove('show');
+            void surpriseText.offsetWidth;
+            surpriseText.classList.add('show');
+            
+            setTimeout(() => {
+                surpriseText.classList.remove('show');
+            }, 1500);
+        }
+
+        function openGift() {
+            if (giftOpened) return;
+            giftOpened = true;
+            
+            const button = document.getElementById('giftButton');
+            button.textContent = '🎁 已拆开';
+            button.style.background = 'linear-gradient(135deg, #6bcb77, #4ade80)';
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    createClickEffect(x, y);
+                }, i * 50);
+            }
+            
+            showSurpriseText('💝 惊喜礼物 💝');
+            
+            setTimeout(() => {
+                button.classList.add('hidden');
+            }, 2000);
+        }
+
+        document.body.addEventListener('click', function(e) {
+            if (e.target.id === 'giftButton') return;
+            createClickEffect(e.clientX, e.clientY);
+        });
+
+        document.getElementById('cakeIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
+            showSurpriseText('🎂 生日快乐 🎂');
+        });
+
+        document.getElementById('giftButton').addEventListener('click', function(e) {
+            e.stopPropagation();
+            openGift();
+        });
+
+        createParticles();
+        createHearts();
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
